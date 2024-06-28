@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Перевод  <label th:text="${bankAccount.accountNumber}"></label></title>
+	</head>
+	<body>
+		<a th:href="@{/bankAccount}">Home page</a>
+		<h1>Перевод со счета : <label th:text="${bankAccount.accountNumber}"></label></h1>
+		<form th:action="@{/bankAccount/{accountNumber}/transfer(accountNumber=${bankAccount.accountNumber})}" method="post">
+			<div><label> Счет зачисления : <input type="text" name="replenishmentAccount"/> </label></div>
+			<div><label> Сумма списания : <input type="text" name="value"/> </label></div>
+			<div><label> Пинкод : <input type="password" name="pincode"/> </label></div>
+			<div><input type="submit" value="Пополнить"/></div>
+			
+		</form>
+	</body>
+</html>

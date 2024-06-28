@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Home page</title>
+	</head>
+	<body>
+		<h1>Welcome, <label th:text="${username}"></label>!</h1>
+		<a th:href="@{/bankAccount/create}">Открыть новый счет</a>
+		<br>
+		<strong>Текущие счета </strong>
+		<ul >
+			<li th:each="bankAccount: ${bankAccounts}">
+				<a th:href="@{/home/{accountNumber}(accountNumber=${bankAccount.accountNumber})}">
+					<span th:text="${bankAccount.accountName }"></span>
+				</a>"
+				 : 
+				 
+				 <span th:text="${bankAccount.money}"></span>
+			</li>
+		</ul>
+		
+		
+		
+		
+		<form th:action="@{/logout}" method="post">
+			        <input type="submit" value="Sign Out"/>
+		</form>
+	</body>
+</html>

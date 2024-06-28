@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>BankAccount</title>
+	</head>
+	<body>
+		<a th:href="@{/bankAccount}">Index page</a>
+		<h1>Номер счета :<label th:text="${bankAccount.accountNumber}"></label> </h1>
+		<a th:href="@{/bankAccount/{accountNumber}/replenishment(accountNumber=${bankAccount.accountNumber})}">+ Пополнить</a>
+		<hr>
+		<a th:href="@{/bankAccount/{accountNumber}/withdraw(accountNumber=${bankAccount.accountNumber})}">- Снять</a>
+		<hr>
+		<a th:href="@{/bankAccount/{accountNumber}/transfer(accountNumber=${bankAccount.accountNumber})}">+ Перевести</a>
+		<hr>
+		<div>Баланс : <label th:text="${bankAccount.money}"></label></div>
+		
+	</body>
+</html>

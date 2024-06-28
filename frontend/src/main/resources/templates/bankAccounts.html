@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Банковские аккаунты</title>
+	</head>
+	<body>
+		<strong>Текущие счета </strong>
+				<ul >
+					<li th:each="account: ${accounts}">
+						<a th:href="@{/bankAccount/{accountNumber}(accountNumber=${account.accountNumber})}">
+							<span th:text="${account.accountName }"></span>
+						</a>"
+						 : 
+						 
+						 <span th:text="${account.money}"></span>
+					</li>
+				</ul>
+	</body>
+</html>

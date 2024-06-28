@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>Registration</title>
+	</head>
+	<body>
+		<h1>Registation Page</h1>
+		<a th:href="@{/}">Main page</a>
+		<br>
+		<a th:href="@{/login}">Login page</a>
+		<div th:if="${message}">
+			<p th:text="${message}"></p>
+		</div>
+		<form method="post" th:action="@{/registration}">
+			<div><label>User name: <input type="text" name="username"/></label></div>
+			<div><label>Pincode: <input type="password" name="pincode"/></label></div>
+			<div><input type="submit" value="Зарегистрироваться"/></div>
+			<input type="hidden" name="_csrf" value="{{_csrf.token}}"/>
+			
+		</form>
+	</body>
+</html>

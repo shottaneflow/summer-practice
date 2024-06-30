@@ -1,14 +1,12 @@
 package com.practice.backend.controller;
 
+import com.practice.backend.entity.PracticeUser;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.practice.backend.exceptions.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.practice.backend.dto.JwtRequest;
@@ -47,8 +45,13 @@ public class AuthController {
 			return new ResponseEntity<>(new AppError(HttpStatus.UNAUTHORIZED.value(),"Неправильный  логин или пароль"),HttpStatus.UNAUTHORIZED);
 		}
 		UserDetails userDetails=practiceUserService.loadUserByUsername(authRequest.getUsername());
+
 		String token=jwtTokenUtils.generateToken(userDetails);
-		return ResponseEntity.ok(new JwtResponse(token));
+		return ResponseEntity.ok(new JwtResponse(token,userDetails));
 				
+	}
+	@GetMapping("{username}")
+	public PracticeUser findByUsername(@PathVariable String username){
+		return this.practiceUserService.findUserByUsername(username);
 	}
 }

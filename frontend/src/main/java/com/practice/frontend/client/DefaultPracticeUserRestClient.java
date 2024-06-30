@@ -3,7 +3,11 @@ package com.practice.frontend.client;
 import java.util.List;
 import java.util.Optional;
 
+import com.practice.frontend.dto.JwtRequest;
+import com.practice.frontend.dto.JwtResponse;
 import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
@@ -18,17 +22,39 @@ public class DefaultPracticeUserRestClient implements PracticeUserRestClient {
 		this.restClient=restClient;
 	}
 	@Override
-	public Optional<PracticeUser> loadUserByUsername(String username) {
+	public Optional<PracticeUser> loadUserFromContext() {
 		
 		try {
 		return Optional.ofNullable(this.restClient.get()
-				.uri("/user-api/{username}",username)
+				.uri("/user-api")
 				.retrieve()
 				.body(PracticeUser.class));
 		}
 		catch(HttpClientErrorException.NotFound eception) {
 			return null;//Возвращаю null для подстановки в представление
 		}
+	}
+	public PracticeUser findPracticeUserByUsername(String username){
+		try {
+			return this.restClient.get()
+					.uri("user-api/{username}", username)
+					.retrieve()
+					.body(PracticeUser.class);
+		}
+		catch(HttpClientErrorException.NotFound eception) {
+			return null;
+		}
+
+	}
+	public  Optional<PracticeUser>  findByName(String username){
+
+			return Optional.ofNullable(this.restClient.get()
+					.uri("auth-api/{username}",username)
+					.retrieve()
+					.body(PracticeUser.class));
+
+
+
 	}
 
 	@Override
@@ -43,12 +69,24 @@ public class DefaultPracticeUserRestClient implements PracticeUserRestClient {
 				
 		
 	}
-	
-	@Override
-	public String getPincodeByBankAccountNumber(Long accountNumber) {
-		
-		return null;
+	public JwtResponse authenticate(JwtRequest jweRequest) throws  Exception{
+		try {
+			return this.restClient.post()
+					.uri("/auth-api")
+					.contentType(MediaType.APPLICATION_JSON)
+					.body(jweRequest)
+					.retrieve()
+					.body(JwtResponse.class);
+		}
+		catch(HttpClientErrorException.Unauthorized exception) {
+			ProblemDetail problemDetail=exception.getResponseBodyAs(ProblemDetail.class);
+				throw new IllegalAccessException(problemDetail.getDetail());
+		}
+
+
 	}
+	
+
 
 
 }

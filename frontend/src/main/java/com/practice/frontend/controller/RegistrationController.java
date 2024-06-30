@@ -39,7 +39,7 @@ public class RegistrationController {
 	public String registration(@RequestParam(name="username") String username,
 							   @RequestParam(name="pincode") String pincode,		
 							   Model model) {
-		if(practiceUserRestClient.loadUserByUsername(username)!=null) {
+		if(practiceUserRestClient.findPracticeUserByUsername(username)!=null) {
 			model.addAttribute("message","Пользователь уже существует!");
 			return "registration";
 		}

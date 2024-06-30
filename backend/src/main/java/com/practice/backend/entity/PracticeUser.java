@@ -3,7 +3,6 @@ package com.practice.backend.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.practice.backend.token.Token;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -45,11 +44,9 @@ public class PracticeUser {
 	joinColumns=@JoinColumn(name="id_user"),
 	inverseJoinColumns=@JoinColumn(name="id_account"))
 	private List<BankAccount> bankAccounts;
+
 	
-	private final Token token;
-	
-	public PracticeUser(Token token) {
-		this.token=token;
+	public PracticeUser() {
 		this.authorities=new ArrayList<>();
 	}
 
@@ -99,7 +96,5 @@ public class PracticeUser {
 		this.bankAccounts.add(account);
 	}
 
-	public Token getToken() {
-		return token;
-	}
+
 }

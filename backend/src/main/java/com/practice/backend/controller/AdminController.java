@@ -11,7 +11,7 @@ import com.practice.backend.service.BankAccountService;
 @RequestMapping("/admin-api")
 public class AdminController {
 
-private BankAccountService bankAccountService;
+private final BankAccountService bankAccountService;
 	
 	
 	

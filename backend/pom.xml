@@ -74,13 +74,6 @@
     <artifactId>jjwt</artifactId>
     <version>0.12.5</version>
 </dependency>
-<!-- https://mvnrepository.com/artifact/com.nimbusds/nimbus-jose-jwt -->
-<dependency>
-    <groupId>com.nimbusds</groupId>
-    <artifactId>nimbus-jose-jwt</artifactId>
-    <version>9.40</version>
-</dependency>
-
 
 
 

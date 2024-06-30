@@ -1,10 +1,12 @@
 package com.practice.backend.controller;
 
+import java.security.Principal;
 import java.util.NoSuchElementException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -31,9 +33,17 @@ import com.practice.backend.exceptions.InsufficientFunds;
 public class BankAccountController {
 
 	private final BankAccountService bankAccountService;
+
+	private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
+	private final PracticeUserService practiceUserService;
 	
-	public BankAccountController(BankAccountService bankAccountService) {
+	public BankAccountController(BankAccountService bankAccountService,
+								 BCryptPasswordEncoder bCryptPasswordEncoder,
+								 PracticeUserService practiceUserService) {
 		this.bankAccountService=bankAccountService;
+		this.bCryptPasswordEncoder=bCryptPasswordEncoder;
+		this.practiceUserService=practiceUserService;
 	}
 	
 	@ModelAttribute("bankAccount")
@@ -51,7 +61,8 @@ public class BankAccountController {
 	@Transactional
 	public ResponseEntity<?> moneyTransfer(@ModelAttribute("bankAccount") BankAccount currentAccount,
 											@Valid @RequestBody MoneyTransferRequest moneyTransferDTO,
-											BindingResult bindingResult) throws InsufficientFunds{
+											BindingResult bindingResult,
+										    Principal principal) throws InsufficientFunds{
 		if(bindingResult.hasErrors()) {
 			ProblemDetail problemDetail=ProblemDetail
 					.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Недостаточно средств");
@@ -62,9 +73,20 @@ public class BankAccountController {
 						.body(problemDetail);					
 		}
 		else {
-			this.bankAccountService.moneyTransfer(currentAccount.getAccountNumber(), moneyTransferDTO.getSecondAccountNumber(), moneyTransferDTO.getAmount());
-			return ResponseEntity.noContent()
-					.build();
+
+			PracticeUser practiceUser=this.practiceUserService.findUserByUsername(principal.getName());
+			if(this.bCryptPasswordEncoder.matches(moneyTransferDTO.getPincode(), practiceUser.getPincode())) {
+				this.bankAccountService.moneyTransfer(currentAccount.getAccountNumber(), moneyTransferDTO.getSecondAccountNumber(), moneyTransferDTO.getAmount());
+				return ResponseEntity.noContent()
+						.build();
+			}
+			else{
+				ProblemDetail problemDetail= ProblemDetail
+						.forStatusAndDetail(HttpStatus.NOT_ACCEPTABLE,"Неправильный пинкод");
+				return ResponseEntity.badRequest()
+						.body(problemDetail);
+			}
+
 		}
 	}
 	@ExceptionHandler(InsufficientFunds.class)

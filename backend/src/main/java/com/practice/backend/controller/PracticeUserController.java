@@ -6,6 +6,7 @@ import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,7 +21,7 @@ import com.practice.backend.entity.PracticeUser;
 import com.practice.backend.service.PracticeUserService;
 
 @RestController
-@RequestMapping("/user-api/{username:[a-zA-Z0-9]+}")
+@RequestMapping("/user-api")
 public class PracticeUserController {
 
 	private final  PracticeUserService practiceUserService;
@@ -31,14 +32,18 @@ public class PracticeUserController {
 	
 	@ModelAttribute("user")
 	public PracticeUser getPracticeUser(Principal principal) {
-		return (PracticeUser)this.practiceUserService.loadUserByUsername(principal.getName());
+		return this.practiceUserService.findUserByUsername(principal.getName());
 				
 	}
 	
 	@GetMapping()
-	public PracticeUser getUserByUsername(@ModelAttribute("user") PracticeUser practiceUser) {
+	public PracticeUser getUserFromContext(@ModelAttribute("user") PracticeUser practiceUser) {
 		return practiceUser;
 		
+	}
+	@GetMapping("{username}")
+	public PracticeUser getUserByUsername(@PathVariable("username") String username) {
+		return this.practiceUserService.findUserByUsername(username);
 	}
 
 	@ExceptionHandler(NoSuchElementException.class)

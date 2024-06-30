@@ -28,13 +28,14 @@ public class DefaultBankAccountRestClient implements BankAccountRestClient {
 	private final RestClient restClient;
 	
 	public DefaultBankAccountRestClient(RestClient restClient) {
+
 		this.restClient=restClient;
 	}
 	@Override
-	public BankAccount create(String accountName,String username) {
+	public BankAccount create(String accountName) {
 		try {
 		return this.restClient.post()
-				.uri("bankAccount-api/{username}",username)
+				.uri("bankAccount-api/bankAccounts")
 				.contentType(MediaType.APPLICATION_JSON)
 				.body(new BankAccount(accountName))
 				.retrieve()
@@ -62,12 +63,13 @@ public class DefaultBankAccountRestClient implements BankAccountRestClient {
 	}
 
 	@Override
-	public void moneyTransfer(Long debitAccount, Long replenishmentAccount, BigDecimal value) throws InsufficientFunds {
+	public void moneyTransfer(Long debitAccount,
+							  MoneyTransferRequest moneyTransferRequest) throws InsufficientFunds {
 		try {
 		this.restClient.patch()
 		.uri("/bankAccount-api/bankAccount/{accountNumber}",debitAccount)
 		.contentType(MediaType.APPLICATION_JSON)
-		.body(new MoneyTransferRequest(replenishmentAccount,value))
+		.body(moneyTransferRequest)
 		.retrieve()
 		.toBodilessEntity();
 		}
@@ -88,6 +90,15 @@ public class DefaultBankAccountRestClient implements BankAccountRestClient {
 		
 		
 	}
+
+	@Override
+	public List<BankAccount> getBankAccounts() {
+		return this.restClient.get()
+				.uri("/bankAccount-api/bankAccounts")
+				.retrieve()
+				.body(BANK_ACCOUNTS_TYPE_REFERENCE);
+	}
+
 	@Override
 	public List<BankAccount> getAllBankAccounts() {
 		return this.restClient.get()
@@ -95,13 +106,7 @@ public class DefaultBankAccountRestClient implements BankAccountRestClient {
 				.retrieve()
 				.body(BANK_ACCOUNTS_TYPE_REFERENCE);
 	}
-	@Override
-	public List<BankAccount> getBankAccounts(PracticeUser user) {
-		return this.restClient.get()
-				.uri("/bankAccount-api/{username}",user.getUsername())
-				.retrieve()
-				.body(BANK_ACCOUNTS_TYPE_REFERENCE);
-	}
+
 	
 
 }

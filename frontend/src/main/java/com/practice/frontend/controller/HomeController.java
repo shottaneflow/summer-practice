@@ -36,9 +36,9 @@ public class HomeController {
 									 Principal principal) {
         String username = principal.getName();
         model.addAttribute("username", username);
-        PracticeUser user=(PracticeUser)practiceUserRestClient.loadUserByUsername(username)
-        		.orElse(null);
-        model.addAttribute("bankAccounts",bankAccountRestClient.getBankAccounts(user));
+        PracticeUser user=this.practiceUserRestClient.loadUserFromContext()
+				.orElse(null);
+        model.addAttribute("bankAccounts",bankAccountRestClient.getBankAccounts());
 		
 		return "home";
 	}
@@ -49,11 +49,8 @@ public class HomeController {
 	}
 	@PostMapping("/bankAccount/create")
 	public String createBankAccount(@RequestParam(name="accountName") String accountName,
-									Model model,
-									Principal principal) {
-		PracticeUser user =(PracticeUser) practiceUserRestClient.loadUserByUsername(principal.getName())
-				.orElseThrow();
-		BankAccount bankAccount=bankAccountRestClient.create(accountName,user.getUsername());
+									Model model) {
+		BankAccount bankAccount=bankAccountRestClient.create(accountName);
 		model.addAttribute("bankAccount",bankAccount);
 		return "bankAccount";
 	}

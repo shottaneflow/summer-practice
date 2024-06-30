@@ -4,15 +4,11 @@ import java.math.BigDecimal;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import com.practice.frontend.dto.MoneyTransferRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import com.practice.frontend.entity.*;
 import com.practice.frontend.exceptions.InsufficientFunds;
 import com.practice.frontend.client.BankAccountRestClient;
@@ -28,74 +24,58 @@ public class BankAccountController {
 	
 	private final PracticeUserRestClient practiceUserRestClient;
 	
-	private final PasswordEncoder passwordEncoder;
+
 	
-	public BankAccountController(BankAccountRestClient bankAccountService,PasswordEncoder passwordEncoder,
+	public BankAccountController(BankAccountRestClient bankAccountService,
 								PracticeUserRestClient practiceUserRestClient) {
 		this.bankAccountService=bankAccountService;
-		this.passwordEncoder=passwordEncoder;
 		this.practiceUserRestClient=practiceUserRestClient;
+	}
+	@ModelAttribute("bankAccount")
+	public BankAccount getBankAccount(@PathVariable Long accountNumber) {
+		return this.bankAccountService.findBankAccountByNumber(accountNumber).orElse(null);
 	}
 	
 	@GetMapping
 	public String getBankAccountPage(Model model,
-									 @PathVariable(name="accountNumber") Long number) {
-	    Optional<BankAccount> optionalBankAccount = bankAccountService.findBankAccountByNumber(number);
+									 @ModelAttribute("bankAccount") BankAccount bankAccount) {
 	   
-	    model.addAttribute("bankAccount", optionalBankAccount.get());
+	    model.addAttribute("bankAccount", bankAccount);
 	    return "bankAccount";
 	  
 	}
 	
 	@GetMapping("replenishment")
 	public String getReplenishmentPage( Model model,
-										@PathVariable(name="accountNumber") Long number) {
-	    Optional<BankAccount> optionalBankAccount = bankAccountService.findBankAccountByNumber(number);
-	   
-	    model.addAttribute("bankAccount", optionalBankAccount.get());
+										@ModelAttribute("bankAccount") BankAccount bankAccount) {
+	    model.addAttribute("bankAccount", bankAccount);
 	    return "replenishment";
 	   
 	}
 	
 	@GetMapping("withdraw")
 	public String getWithdrawPage( Model model,
-										@PathVariable(name="accountNumber") Long number) {
-	    Optional<BankAccount> optionalBankAccount = bankAccountService.findBankAccountByNumber(number);
-	   
-	    model.addAttribute("bankAccount", optionalBankAccount.get());
+								   @ModelAttribute("bankAccount") BankAccount bankAccount) {
+	    model.addAttribute("bankAccount", bankAccount);
 	    return "withdraw";
 	   
 	}
 	
 	@GetMapping("transfer")
 	public String getTransferPage( Model model,
-										@PathVariable(name="accountNumber") Long number) {
-	    Optional<BankAccount> optionalBankAccount = bankAccountService.findBankAccountByNumber(number);
-	   
-	    model.addAttribute("bankAccount", optionalBankAccount.get());
+								   @ModelAttribute("bankAccount") BankAccount bankAccount) {
+	    model.addAttribute("bankAccount", bankAccount);
 	    return "transfer";
 	   
 	}
-	
-	
-	
 	
 	@PostMapping("replenishment")
 	public String replenishment(@PathVariable(name="accountNumber") Long replenishmentAccount,
 								@RequestParam(name="debitAccount") Long debitAccount,
 								@RequestParam(name="value") BigDecimal value,
 								@RequestParam(name="pincode") String pincode) throws InsufficientFunds  {
-		
-		String encodePincode=passwordEncoder.encode(pincode);
-		for(BankAccount account: this.bankAccountService.getAllBankAccounts()) {
-			if(account.getAccountNumber().equals(debitAccount)) {
-				//if(encodePincode.equals(practiceUserRestClient.getPincodeByBankAccountNumber(debitAccount)
-						bankAccountService.moneyTransfer(debitAccount, replenishmentAccount,value);
-			}
-		}
-		
-			
-			
+
+		this.bankAccountService.moneyTransfer(replenishmentAccount,new MoneyTransferRequest(debitAccount,value,pincode));
 		return "redirect:/bankAccounts";
 	}
 	@PostMapping("withdraw")
@@ -103,8 +83,8 @@ public class BankAccountController {
 								@RequestParam(name="replenishmentAccount") Long replenishmentAccount,
 								@RequestParam(name="value") BigDecimal value,
 								@RequestParam(name="pincode") String pincode) throws InsufficientFunds  {
-		
-			this.bankAccountService.moneyTransfer(debitAccount, replenishmentAccount, value);
+
+			this.bankAccountService.moneyTransfer(replenishmentAccount,new MoneyTransferRequest(debitAccount,value,pincode));
 		
 			
 			
@@ -115,7 +95,7 @@ public class BankAccountController {
 								@RequestParam(name="replenishmentAccount") Long replenishmentAccount,
 								@RequestParam(name="value") BigDecimal value,
 								@RequestParam(name="pincode") String pincode) throws InsufficientFunds  {
-			this.bankAccountService.moneyTransfer(debitAccount, replenishmentAccount, value);
+		this.bankAccountService.moneyTransfer(replenishmentAccount,new MoneyTransferRequest(debitAccount,value,pincode));
 		
 			
 			

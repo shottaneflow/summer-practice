@@ -25,8 +25,6 @@ public class ClientBeans {
 															 ) {
 		return new DefaultBankAccountRestClient(RestClient.builder()
 				.baseUrl(restBaseUri)
-				.requestInterceptor(
-						new BearerToken(backendUsername,backendPassword))
 				.build())
 				;
 	}
@@ -35,8 +33,6 @@ public class ClientBeans {
 			 ) {
 		return new DefaultPracticeUserRestClient(RestClient.builder()
 				.baseUrl(restBaseUri)
-				.requestInterceptor(
-						new BasicAuthenticationInterceptor(backendUsername,backendPassword))
 				.build())
 				;
 }

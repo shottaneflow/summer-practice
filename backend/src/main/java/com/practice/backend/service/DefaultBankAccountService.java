@@ -12,7 +12,7 @@ import com.practice.backend.repository.BankAccountRepository;
 @Service
 public class DefaultBankAccountService implements BankAccountService {
 
-	private BankAccountRepository bankAccountRepository;
+	private final BankAccountRepository bankAccountRepository;
 	
 	public DefaultBankAccountService(BankAccountRepository bankAccountRepository) {
 		this.bankAccountRepository=bankAccountRepository;
@@ -23,7 +23,7 @@ public class DefaultBankAccountService implements BankAccountService {
 	public BankAccount create(String name) {
 		BankAccount account=new BankAccount();
 		account.setAccountName(name);
-		account.setMoney(BigDecimal.valueOf(100000));
+		account.setMoney(BigDecimal.ZERO);
 		return this.bankAccountRepository.save(account);
 		
 	}

@@ -1,12 +1,7 @@
 package com.practice.frontend.controller;
 
-import java.util.Collections;
-import java.util.Objects;
-
-import java.util.*;
-
+import com.practice.frontend.client.AuthRegistrationRestClient;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.practice.frontend.client.PracticeUserRestClient;
 import com.practice.frontend.entity.Authority;
 import com.practice.frontend.entity.PracticeUser;
 
@@ -23,12 +17,13 @@ import com.practice.frontend.entity.PracticeUser;
 @RequestMapping("/registration")
 public class RegistrationController {
 
-	private final PracticeUserRestClient practiceUserRestClient;
+
+	private final AuthRegistrationRestClient authRegistrationRestClient;
 	
 	
 	
-	public RegistrationController(PracticeUserRestClient practiceUserRestClient) {
-		this.practiceUserRestClient=practiceUserRestClient;
+	public RegistrationController(AuthRegistrationRestClient authRegistrationRestClient) {
+		this.authRegistrationRestClient=authRegistrationRestClient;
 	}
 	
 	@GetMapping
@@ -39,10 +34,19 @@ public class RegistrationController {
 	public String registration(@RequestParam(name="username") String username,
 							   @RequestParam(name="pincode") String pincode,		
 							   Model model) {
-		if(practiceUserRestClient.findPracticeUserByUsername(username)!=null) {
-			model.addAttribute("message","Пользователь уже существует!");
-			return "registration";
+		try {
+
+
+			if (authRegistrationRestClient.findByName(username)!=null) {
+				model.addAttribute("message", "Пользователь уже существует!");
+				return "registration";
+			}
 		}
+		catch (Exception e) {
+			model.addAttribute("message", e.getMessage());
+
+		}
+
 		PracticeUser user=new PracticeUser();
 		user.setUsername(username);
 		user.setPincode(new BCryptPasswordEncoder().encode(pincode));
@@ -50,13 +54,14 @@ public class RegistrationController {
 		auth.setId(2);
 		auth.setAuthority("ROLE_USER");
 		user.addAuthorities(auth);
-		
-		this.practiceUserRestClient.save(user);
 
-		
-		
-		
-		
+		this.authRegistrationRestClient.save(user);
+
+
+
+
+
 		return "redirect:/login";
+
 	}
 }

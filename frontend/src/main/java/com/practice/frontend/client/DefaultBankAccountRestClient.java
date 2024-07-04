@@ -57,7 +57,7 @@ public class DefaultBankAccountRestClient implements BankAccountRestClient {
 				.retrieve()
 				.body(BankAccount.class));
 		}
-		catch(HttpClientErrorException.NotFound eception) {
+		catch(HttpClientErrorException.NotFound exception) {
 			return Optional.empty();
 		}
 	}
@@ -73,11 +73,7 @@ public class DefaultBankAccountRestClient implements BankAccountRestClient {
 		.retrieve()
 		.toBodilessEntity();
 		}
-		catch(HttpClientErrorException.BadRequest   exception) {
-			ProblemDetail problemDetail=exception.getResponseBodyAs(ProblemDetail.class);
-			problemDetail.getProperties().get("errors");
-			throw new BadRequest((List<String>)problemDetail.getProperties().get("errors"));
-		}
+
 		catch(HttpClientErrorException.NotFound exception) {
 			 ProblemDetail problemDetail = exception.getResponseBodyAs(ProblemDetail.class);
 	         throw new NoSuchElementException(problemDetail.getDetail());
@@ -86,6 +82,11 @@ public class DefaultBankAccountRestClient implements BankAccountRestClient {
 		catch(HttpClientErrorException.NotAcceptable exception) {
 			ProblemDetail problemDetail = exception.getResponseBodyAs(ProblemDetail.class);
 	         throw new InsufficientFunds(problemDetail.getDetail());
+		}
+		catch(HttpClientErrorException.BadRequest   exception) {
+			ProblemDetail problemDetail=exception.getResponseBodyAs(ProblemDetail.class);
+				throw new BadRequest((List<String>) problemDetail.getProperties().get("errors"));
+
 		}
 		
 		

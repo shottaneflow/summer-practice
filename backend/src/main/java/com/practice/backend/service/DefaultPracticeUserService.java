@@ -66,9 +66,6 @@ public class DefaultPracticeUserService implements PracticeUserService {
 						.map(Authority::getAuthority)
 						.map(SimpleGrantedAuthority::new)
 						.toList());
-				
-					
-		
 	}
 	}
 

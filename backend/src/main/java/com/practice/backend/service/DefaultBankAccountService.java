@@ -43,8 +43,6 @@ public class DefaultBankAccountService implements BankAccountService {
 		if(debit.getMoney().compareTo(value)>=0) {
 			   debit.setMoney(debit.getMoney().subtract(value));
 			   replenishment.setMoney(replenishment.getMoney().add(value));
-			
-			
 			}
 			else {
 				throw new InsufficientFunds("Недостаточно средств");

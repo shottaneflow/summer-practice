@@ -11,7 +11,7 @@
 		<strong>Текущие счета </strong>
 		<ul >
 			<li th:each="bankAccount: ${bankAccounts}">
-				<a th:href="@{/home/{accountNumber}(accountNumber=${bankAccount.accountNumber})}">
+				<a th:href="@{/bankAccount/{accountNumber}(accountNumber=${bankAccount.accountNumber})}">
 					<span th:text="${bankAccount.accountName }"></span>
 				</a>"
 				 : 

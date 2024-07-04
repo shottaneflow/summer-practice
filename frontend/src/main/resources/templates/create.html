@@ -5,7 +5,7 @@
 		<title>Create Bank account</title>
 	</head>
 	<body>
-		<a th:href="@{/bankAccount}">Index page</a>
+		<a th:href="@{/home}">Банковские счета</a>
 		<form th:action="@{/bankAccount/create}" method="post">
 			<div><label>Имя счета :<input type="text" name="accountName"/></label></div>
 			<div><input type="submit" value="Создать"/></div>

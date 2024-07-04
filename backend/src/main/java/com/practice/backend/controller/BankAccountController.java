@@ -83,17 +83,14 @@ public class BankAccountController {
 			else{
 				ProblemDetail problemDetail= ProblemDetail
 						.forStatusAndDetail(HttpStatus.NOT_ACCEPTABLE,"Неправильный пинкод");
-				return ResponseEntity.badRequest()
-						.body(problemDetail);
+				return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(problemDetail);
+
 			}
 
 		}
+
 	}
-	@ExceptionHandler(InsufficientFunds.class)
-	public ResponseEntity<ProblemDetail> handleInsufficientFundsException(InsufficientFunds exception){
-		return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
-				.body(ProblemDetail.forStatusAndDetail(HttpStatus.NOT_ACCEPTABLE, exception.getMessage()));
-	}
+
 	@ExceptionHandler(NoSuchElementException.class)
 	public ResponseEntity<ProblemDetail> handleNoSuchElementException(NoSuchElementException exception){
 		return ResponseEntity.status(HttpStatus.NOT_FOUND)

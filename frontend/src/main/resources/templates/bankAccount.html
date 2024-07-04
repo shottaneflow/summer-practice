@@ -5,7 +5,7 @@
 		<title>BankAccount</title>
 	</head>
 	<body>
-		<a th:href="@{/bankAccount}">Index page</a>
+		<a th:href="@{/home}">Банковские аккаунты</a>
 		<h1>Номер счета :<label th:text="${bankAccount.accountNumber}"></label> </h1>
 		<a th:href="@{/bankAccount/{accountNumber}/replenishment(accountNumber=${bankAccount.accountNumber})}">+ Пополнить</a>
 		<hr>

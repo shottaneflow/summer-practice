@@ -67,7 +67,7 @@ public class BanksAccountRestController {
 			practiceUser.addBankAccounts(account);
 			return ResponseEntity
 					.created(uriComponentsBuilder
-							.replacePath("/bankAccount-api/{accountNumber}")
+							.replacePath("/bankAccount-api/bankAccount/{accountNumber}")
 							.build(Map.of("accountNumber",account.getAccountNumber())))
 					.body(account);
 		}

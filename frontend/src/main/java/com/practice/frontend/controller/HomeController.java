@@ -22,12 +22,13 @@ import com.practice.frontend.client.*;
 
 public class HomeController {
 	
-	private BankAccountRestClient bankAccountRestClient;
-	private PracticeUserRestClient practiceUserRestClient;
+	private final BankAccountRestClient bankAccountRestClient;
+	private final AuthRegistrationRestClient authRegistrationRestClient;
 	
-	public HomeController(BankAccountRestClient bankAccountService,PracticeUserRestClient practiceUserRestClient) {
+	public HomeController(BankAccountRestClient bankAccountService
+							,AuthRegistrationRestClient authRegistrationRestClient) {
 		this.bankAccountRestClient=bankAccountService;
-		this.practiceUserRestClient=practiceUserRestClient;
+		this.authRegistrationRestClient=authRegistrationRestClient;
 	}
 	
 	
@@ -36,7 +37,7 @@ public class HomeController {
 									 Principal principal) {
         String username = principal.getName();
         model.addAttribute("username", username);
-        PracticeUser user=this.practiceUserRestClient.loadUserFromContext()
+        PracticeUser user=this.authRegistrationRestClient.findByName(username)
 				.orElse(null);
         model.addAttribute("bankAccounts",bankAccountRestClient.getBankAccounts());
 		

@@ -22,18 +22,17 @@ public class BankAccountController {
 	
 	private final BankAccountRestClient bankAccountService;
 	
-	private final PracticeUserRestClient practiceUserRestClient;
+
 	
 
 	
-	public BankAccountController(BankAccountRestClient bankAccountService,
-								PracticeUserRestClient practiceUserRestClient) {
+	public BankAccountController(BankAccountRestClient bankAccountService) {
 		this.bankAccountService=bankAccountService;
-		this.practiceUserRestClient=practiceUserRestClient;
 	}
 	@ModelAttribute("bankAccount")
 	public BankAccount getBankAccount(@PathVariable Long accountNumber) {
-		return this.bankAccountService.findBankAccountByNumber(accountNumber).orElse(null);
+		return this.bankAccountService.findBankAccountByNumber(accountNumber)
+				.orElseThrow(()->new NoSuchElementException("Банковский аккаунт не найден"));
 	}
 	
 	@GetMapping
@@ -75,8 +74,10 @@ public class BankAccountController {
 								@RequestParam(name="value") BigDecimal value,
 								@RequestParam(name="pincode") String pincode) throws InsufficientFunds  {
 
-		this.bankAccountService.moneyTransfer(replenishmentAccount,new MoneyTransferRequest(debitAccount,value,pincode));
-		return "redirect:/bankAccounts";
+		if(value.compareTo(BigDecimal.ZERO)>=0) {
+			this.bankAccountService.moneyTransfer(debitAccount, new MoneyTransferRequest(replenishmentAccount, value, pincode));
+		}
+		return "redirect:/home";
 	}
 	@PostMapping("withdraw")
 	public String withdraw(@PathVariable(name="accountNumber") Long debitAccount,
@@ -84,22 +85,23 @@ public class BankAccountController {
 								@RequestParam(name="value") BigDecimal value,
 								@RequestParam(name="pincode") String pincode) throws InsufficientFunds  {
 
-			this.bankAccountService.moneyTransfer(replenishmentAccount,new MoneyTransferRequest(debitAccount,value,pincode));
-		
+		if(value.compareTo(BigDecimal.ZERO)>=0) {
+			this.bankAccountService.moneyTransfer(debitAccount, new MoneyTransferRequest(replenishmentAccount, value, pincode));
+		}
 			
-			
-		return "redirect:/bankAccounts";
+		return "redirect:/home";
 	}
 	@PostMapping("transfer")
 	public String transfer(@PathVariable(name="accountNumber") Long debitAccount,
 								@RequestParam(name="replenishmentAccount") Long replenishmentAccount,
 								@RequestParam(name="value") BigDecimal value,
 								@RequestParam(name="pincode") String pincode) throws InsufficientFunds  {
-		this.bankAccountService.moneyTransfer(replenishmentAccount,new MoneyTransferRequest(debitAccount,value,pincode));
-		
+		if(value.compareTo(BigDecimal.ZERO)>=0) {
+			this.bankAccountService.moneyTransfer(debitAccount, new MoneyTransferRequest(replenishmentAccount, value, pincode));
+		}
 			
 			
-		return "redirect:/bankAccounts";
+		return "redirect:/home";
 	}
     @ExceptionHandler(InsufficientFunds.class)
     public String handleInsufficientFundsException(InsufficientFunds exception, Model model) {
@@ -116,5 +118,6 @@ public class BankAccountController {
         model.addAttribute("errorMessage", exception.getMessage());
         return "exception";
     }
+
 
 }

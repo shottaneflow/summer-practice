@@ -1,45 +1,41 @@
-package com.practice.frontend.security;
+package com.practice.frontend.service;
 
-import com.practice.frontend.dto.JwtResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.practice.frontend.client.AuthRegistrationRestClient;
+import com.practice.frontend.dto.JwtRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.practice.frontend.client.PracticeUserRestClient;
 import com.practice.frontend.entity.Authority;
-import lombok.RequiredArgsConstructor;
-
 
 
 @Service
 public class PracticeUserDetailService implements UserDetailsService {
 
 
-	private final PracticeUserRestClient practiceUserRestClient;
+	private final AuthRegistrationRestClient authRegistrationRestClient;
 
 
 	private final  PasswordEncoder passwordEncoder;
+	private final HttpSession httpSession;
 
-	public PracticeUserDetailService(PracticeUserRestClient practiceUserRestClient,
-									 PasswordEncoder passwordEncoder) {
-		this.practiceUserRestClient=practiceUserRestClient;
+	public PracticeUserDetailService(AuthRegistrationRestClient authRegistrationRestClient,
+									 PasswordEncoder passwordEncoder, HttpSession httpSession) {
+		this.authRegistrationRestClient=authRegistrationRestClient;
 		this.passwordEncoder=passwordEncoder;
-
-
-		
+		this.httpSession = httpSession;
 	}
 
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-		return this.practiceUserRestClient.findByName(username)
+		UserDetails userDetails= this.authRegistrationRestClient.findByName(username)
 				.map(user->User.builder()
 						.username(user.getUsername())
 						.password(user.getPincode())
@@ -49,19 +45,18 @@ public class PracticeUserDetailService implements UserDetailsService {
 								.toList())
 						.build())
 				.orElseThrow(()->new UsernameNotFoundException("User %S not found".formatted(username)));
+		JwtRequest jwtRequest=new JwtRequest(username,userDetails.getPassword());
 
-/*
-		return this.practiceUserRestClient.loadUserFromContext()
-				.map(user->User.builder()
-						.username(user.getUsername())
-						.password(user.getPincode())
-						.authorities(user.getAuthorities().stream()
-								.map(Authority::getAuthority)
-								.map(SimpleGrantedAuthority::new)
-								.toList())
-						.build())
-				.orElseThrow(()->new UsernameNotFoundException("User %S not found".formatted(username)));*/
-			
+		try {
+			String token=this.authRegistrationRestClient.authenticate(jwtRequest);
+			httpSession.setAttribute("jwtToken",token);
+		}
+		catch(Exception e) {
+			throw new UsernameNotFoundException(e.getMessage());
+		}
+		return userDetails;
+
+
 	}
 
 }

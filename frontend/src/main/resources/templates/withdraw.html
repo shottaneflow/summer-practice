@@ -5,7 +5,7 @@
 		<title>Вывод  <label th:text="${bankAccount.accountNumber}"></label></title>
 	</head>
 	<body>
-		<a th:href="@{/bankAccount}">Home page</a>
+		<a th:href="@{/home}">Банковские аккаунты</a>
 		<h1>Вывод со счета : <label th:text="${bankAccount.accountNumber}"></label></h1>
 		<form th:action="@{/bankAccount/{accountNumber}/withdraw(accountNumber=${bankAccount.accountNumber})}" method="post">
 			<div><label> Счет зачисления : <input type="text" name="replenishmentAccount"/> </label></div>

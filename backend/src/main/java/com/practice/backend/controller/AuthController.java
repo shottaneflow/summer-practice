@@ -10,10 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import com.practice.backend.exceptions.*;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.practice.backend.dto.JwtRequest;
-import com.practice.backend.dto.JwtResponse;
 import com.practice.backend.service.PracticeUserService;
 import com.practice.backend.util.JwtTokenUtils;
-import java.util.NoSuchElementException;
 
 
 @RestController
@@ -47,7 +45,7 @@ public class AuthController {
 		UserDetails userDetails=practiceUserService.loadUserByUsername(authRequest.getUsername());
 
 		String token=jwtTokenUtils.generateToken(userDetails);
-		return ResponseEntity.ok(new JwtResponse(token,userDetails));
+		return ResponseEntity.ok(token);
 				
 	}
 	@GetMapping("{username}")

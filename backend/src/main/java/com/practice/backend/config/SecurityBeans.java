@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import com.practice.backend.entity.PracticeUser;
 import com.practice.backend.repository.PracticeUserRepository;
@@ -88,7 +89,7 @@ public class SecurityBeans {
 	    public DaoAuthenticationProvider authenticationProvider() {
 	        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
 	        authProvider.setUserDetailsService(practiceUserService); 
-	        authProvider.setPasswordEncoder(passwordEncoder());
+	        authProvider.setPasswordEncoder(NoOpPasswordEncoder.getInstance());
 	        return authProvider;
 	    }
 	

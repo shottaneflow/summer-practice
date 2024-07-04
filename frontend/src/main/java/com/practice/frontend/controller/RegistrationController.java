@@ -1,13 +1,11 @@
 package com.practice.frontend.controller;
 
 import com.practice.frontend.client.AuthRegistrationRestClient;
+import com.practice.frontend.exceptions.InsufficientFunds;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import com.practice.frontend.entity.Authority;
 import com.practice.frontend.entity.PracticeUser;
@@ -33,7 +31,10 @@ public class RegistrationController {
 	@PostMapping
 	public String registration(@RequestParam(name="username") String username,
 							   @RequestParam(name="pincode") String pincode,		
-							   Model model) {
+							   Model model) throws Exception {
+		if(pincode.length()!=4) {
+			throw new InsufficientFunds("Длина пинкода должна быть 4 символа");
+		}
 		try {
 
 
@@ -63,5 +64,10 @@ public class RegistrationController {
 
 		return "redirect:/login";
 
+	}
+	@ExceptionHandler(InsufficientFunds.class)
+	public String handleInsufficientFundsException(InsufficientFunds exception, Model model) {
+		model.addAttribute("errorMessage", exception.getMessage());
+		return "exception";
 	}
 }
